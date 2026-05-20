@@ -250,8 +250,12 @@ export default function VillageView() {
 
   return (
     <div
-      className={`h-screen min-h-screen ${timeTheme.bg} flex flex-col overflow-hidden relative transition-colors duration-1000`}
+      className={`min-h-screen ${timeTheme.bg} flex flex-col overflow-hidden relative transition-colors duration-1000`}
       style={{
+        height:
+          "calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom))",
+        minHeight:
+          "calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom))",
         paddingTop: "env(safe-area-inset-top)",
         paddingBottom: "env(safe-area-inset-bottom)",
       }}
@@ -315,6 +319,7 @@ export default function VillageView() {
         style={{
           height: "calc(100dvh - 6.5rem)",
           maxHeight: "calc(100dvh - 6.5rem)",
+          overflow: "hidden",
         }}
       >
         <TransformWrapper
