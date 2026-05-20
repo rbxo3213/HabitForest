@@ -250,7 +250,11 @@ export default function VillageView() {
 
   return (
     <div
-      className={`min-h-full ${timeTheme.bg} flex flex-col overflow-hidden relative transition-colors duration-1000`}
+      className={`h-screen min-h-screen ${timeTheme.bg} flex flex-col overflow-hidden relative transition-colors duration-1000`}
+      style={{
+        paddingTop: "env(safe-area-inset-top)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+      }}
     >
       {/* 실제 시간 기반 하늘 오브젝트 */}
       <div className="absolute top-24 right-12 opacity-30 pointer-events-none z-10">
@@ -308,7 +312,10 @@ export default function VillageView() {
       {/* Isometric World Grid */}
       <main
         className="flex-1 w-full relative overflow-hidden touch-none"
-        style={{ height: "100dvh" }}
+        style={{
+          height: "calc(100dvh - 6.5rem)",
+          maxHeight: "calc(100dvh - 6.5rem)",
+        }}
       >
         <TransformWrapper
           initialScale={0.8}
@@ -481,7 +488,10 @@ export default function VillageView() {
             initial={{ y: 60 }}
             animate={{ y: 0 }}
             exit={{ y: 60 }}
-            className="absolute bottom-6 left-0 right-0 px-6 flex justify-between items-center z-20 pointer-events-none"
+            className="absolute left-0 right-0 px-6 flex justify-between items-center z-20 pointer-events-none"
+            style={{
+              bottom: "calc(env(safe-area-inset-bottom, 0px) + 1.5rem)",
+            }}
           >
             <button
               onClick={() => setIsDecorating(true)}

@@ -116,10 +116,30 @@ export default function GroupSetup() {
         });
       });
 
-      await updateDoc(doc(db, "users", currentUser.uid), {
-        groupId: inviteCode,
-        updatedAt: serverTimestamp(),
-      });
+      const userDocRef = doc(db, \"users\", currentUser.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        await updateDoc(userDocRef, {
+          groupId: inviteCode,
+          updatedAt: serverTimestamp(),
+        });
+      } else {
+        await setDoc(
+          userDocRef,
+          {
+            uid: currentUser.uid,
+            email: currentUser.email,
+            nickname: currentUser.email?.split(\"@\")[0] || \"주민\",
+            themeColor: \"bg-blue-400\",
+            groupId: inviteCode,
+            points: 500,
+            currentActivity: \"idle\",
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true },
+        );
+      }
 
       router.push("/dashboard");
     } catch (error) {

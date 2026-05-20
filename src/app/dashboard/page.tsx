@@ -194,8 +194,45 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-full flex items-center justify-center bg-gray-50">
-        <Loader2 className="animate-spin text-gray-400" size={32} />
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        {/* Header Skeleton */}
+        <div className="flex justify-between items-center px-4 py-3 bg-white border-b border-gray-50 flex-shrink-0">
+          <div className="min-w-0 flex-1">
+            <div className="h-5 w-32 bg-gray-200 rounded animate-pulse" />
+            <div className="h-3 w-20 bg-gray-100 rounded mt-1 animate-pulse" />
+          </div>
+          <div className="w-9 h-9 bg-gray-200 rounded-full animate-pulse flex-shrink-0" />
+        </div>
+
+        {/* Banner Skeleton */}
+        <div className="px-4 py-2 bg-white border-b border-gray-100 flex-shrink-0 animate-pulse">
+          <div className="h-3 w-16 bg-gray-200 rounded mb-2" />
+          <div className="h-5 w-32 bg-gray-100 rounded" />
+        </div>
+
+        {/* Grid Skeleton */}
+        <div className="flex-1 overflow-hidden px-4 py-3">
+          <div className="grid grid-cols-2 gap-2 h-full">
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100 animate-pulse"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0" />
+                  <div className="h-3 w-16 bg-gray-200 rounded flex-1" />
+                </div>
+                <div className="h-3 w-12 bg-gray-100 rounded mb-2" />
+                <div className="h-12 w-full bg-gray-100 rounded-lg" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* FAB Skeleton */}
+        <div className="px-4 py-3 bg-white border-t border-gray-100 flex-shrink-0">
+          <div className="h-10 w-full bg-gray-900 rounded-full animate-pulse" />
+        </div>
       </div>
     );
   }
@@ -225,166 +262,137 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-full bg-gray-50 flex flex-col p-4 relative">
-      <header className="flex justify-between items-center pt-4 pb-3 mb-2">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Header: 고정 높이, compact */}
+      <header className="flex justify-between items-center px-4 py-3 bg-white border-b border-gray-50 flex-shrink-0">
+        <div className="min-w-0">
+          <h1 className="text-lg font-bold tracking-tight text-gray-900 truncate">
             {groupName}
           </h1>
-          <p className="text-xs text-gray-400 font-medium mt-0.5">
-            오늘의 목표 현황
-          </p>
+          <p className="text-xs text-gray-400 font-medium">오늘의 목표</p>
         </div>
         <Link
           href="/settings"
-          className="w-10 h-10 bg-white rounded-full border border-gray-100 shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+          className="w-9 h-9 bg-gray-50 rounded-full border border-gray-100 flex items-center justify-center hover:bg-gray-100 transition-colors flex-shrink-0"
         >
-          <Settings size={18} className="text-gray-500" />
+          <Settings size={16} className="text-gray-600" />
         </Link>
       </header>
 
-      {groupId ? (
-        <div className="bg-white border border-gray-200 rounded-3xl p-4 shadow-sm mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <p className="text-sm font-semibold text-gray-900">초대 코드</p>
-            <p className="mt-2 inline-flex items-center gap-2 rounded-2xl bg-slate-100 px-3 py-2 text-sm font-medium tracking-widest text-gray-800">
-              {inviteCode}
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 items-center">
-            <button
-              type="button"
-              onClick={copyInviteCode}
-              className="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white hover:bg-slate-800 transition-colors"
-            >
-              {copied ? "복사됨" : "코드 복사"}
-            </button>
-            <button
-              type="button"
-              onClick={handleLeaveGroup}
-              disabled={leaving}
-              className="rounded-2xl border border-red-200 bg-white px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
-            >
-              {leaving ? "나가는 중..." : "마을 나가기"}
-            </button>
+      {/* 초대 코드 배너: Compact */}
+      {groupId && (
+        <div className="px-4 py-2 bg-white border-b border-gray-100 flex-shrink-0">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-gray-700">초대 코드</p>
+              <p className="text-sm font-mono font-bold text-gray-900">
+                {inviteCode}
+              </p>
+            </div>
+            <div className="flex gap-2 flex-shrink-0">
+              <button
+                type="button"
+                onClick={copyInviteCode}
+                className="px-3 py-1.5 rounded-lg bg-gray-900 text-white text-xs font-semibold hover:bg-gray-800 transition-colors"
+              >
+                {copied ? "✓" : "복사"}
+              </button>
+              <button
+                type="button"
+                onClick={handleLeaveGroup}
+                disabled={leaving}
+                className="px-3 py-1.5 rounded-lg border border-red-300 bg-white text-red-600 text-xs font-semibold hover:bg-red-50 transition-colors disabled:opacity-50"
+              >
+                나가
+              </button>
+            </div>
           </div>
         </div>
-      ) : (
-        <div className="bg-white border border-dashed border-gray-200 rounded-3xl p-6 shadow-sm mb-4 text-center">
-          <p className="text-sm text-gray-600">
-            아직 참여 중인 마을이 없습니다.
-          </p>
-          <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
+      )}
+
+      {!groupId && (
+        <div className="px-4 py-3 bg-white border-b border-gray-100 flex-shrink-0">
+          <p className="text-xs text-gray-600 mb-2">아직 마을이 없습니다</p>
+          <div className="flex gap-2">
             <Link
               href="/onboarding/group"
-              className="rounded-2xl bg-black px-5 py-3 text-sm font-semibold text-white hover:bg-gray-900 transition-colors"
+              className="text-xs px-3 py-1.5 rounded-lg bg-black text-white font-semibold hover:bg-gray-900 transition-colors"
             >
-              새 마을 만들기
+              새 마을
             </Link>
             <Link
               href="/onboarding/group"
-              className="rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-colors"
+              className="text-xs px-3 py-1.5 rounded-lg border border-gray-300 text-gray-900 font-semibold hover:bg-gray-50 transition-colors"
             >
-              초대 코드로 참여
+              참여
             </Link>
           </div>
         </div>
       )}
 
-      {/* 2x2 Grid */}
-      <div
-        className="flex-1 grid grid-cols-2 gap-3 pb-28"
-        style={{ gridAutoRows: "1fr" }}
-      >
+      {/* 멤버 그리드: 유연한 높이 */}
+      <div className="flex-1 overflow-hidden px-4 py-3">
         {members.length === 0 ? (
-          <div className="col-span-2 flex flex-col items-center justify-center py-20 text-gray-400 gap-3">
-            <p className="text-sm text-center break-keep">
-              그룹 데이터가 없습니다.
-              <br />
-              <Link href="/seed" className="text-blue-500 underline">
-                /seed 페이지
-              </Link>
-              에서 테스트 유저를 생성하세요.
-            </p>
+          <div className="h-full flex flex-col items-center justify-center text-gray-400 text-center">
+            <p className="text-sm">그룹 멤버가 없습니다</p>
           </div>
         ) : (
-          members.slice(0, 4).map((member, index) => {
-            const s = statusLabel(member.taskStatus);
-            return (
-              <Link href={`/village/${member.id}`} key={member.id}>
-                <motion.div
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.08, ease: "easeOut" }}
-                  className={`h-full bg-white rounded-3xl p-4 shadow-sm border flex flex-col justify-between hover:shadow-md transition-shadow active:scale-95 ${
-                    member.isMe
-                      ? "border-black/10 ring-2 ring-black/5"
-                      : "border-gray-100"
-                  }`}
-                >
-                  {/* 헤더: 아바타 + 이름 */}
-                  <div className="flex items-center gap-2.5">
-                    <div
-                      className={`w-9 h-9 rounded-full ${member.color} shadow-inner flex-shrink-0 border-2 border-white flex items-center justify-center`}
-                    >
-                      {member.isMe && (
-                        <span className="text-white text-[8px] font-bold">
-                          나
-                        </span>
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="font-semibold text-gray-900 truncate text-sm leading-tight">
+          <div className="grid grid-cols-2 gap-2 h-full">
+            {members.slice(0, 4).map((member) => {
+              const s = statusLabel(member.taskStatus);
+              return (
+                <Link href={`/village/${member.id}`} key={member.id}>
+                  <div className="h-full bg-white rounded-2xl p-3 shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition-shadow active:scale-95">
+                    {/* 헤더 */}
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div
+                        className={`w-8 h-8 rounded-full ${member.color} shadow-inner flex-shrink-0 border-2 border-white flex items-center justify-center`}
+                      >
+                        {member.isMe && (
+                          <span className="text-white text-[7px] font-bold">
+                            나
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="font-semibold text-gray-900 truncate text-xs leading-tight">
                         {member.name}
                       </h3>
-                      {member.isMe && (
-                        <span className="text-[10px] text-gray-400">
-                          내 캐릭터
-                        </span>
+                    </div>
+
+                    {/* 상태 */}
+                    <div className="flex items-center gap-1 text-[10px] mt-1">
+                      {s.icon}
+                      <span className={`font-medium ${s.color}`}>{s.text}</span>
+                    </div>
+
+                    {/* 사진 */}
+                    <div className="mt-2 pt-2 border-t border-gray-50">
+                      {member.hasPhoto ? (
+                        <div className="w-full h-12 rounded-lg bg-gradient-to-tr from-blue-50 to-green-50 flex items-center justify-center relative text-[8px]">
+                          <ImageIcon size={14} className="text-gray-300" />
+                        </div>
+                      ) : (
+                        <div className="w-full h-12 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center bg-gray-50/50 text-[8px]">
+                          미인증
+                        </div>
                       )}
                     </div>
                   </div>
-
-                  {/* 상태 */}
-                  <div className="flex items-center gap-1.5 mt-3">
-                    {s.icon}
-                    <span className={`text-xs font-medium ${s.color}`}>
-                      {s.text}
-                    </span>
-                  </div>
-
-                  {/* 사진 영역 */}
-                  <div className="mt-3 pt-3 border-t border-gray-50">
-                    {member.hasPhoto ? (
-                      <div className="w-full h-16 rounded-xl bg-gradient-to-tr from-blue-50 to-green-50 flex items-center justify-center relative">
-                        <ImageIcon size={20} className="text-gray-300" />
-                        <span className="absolute bottom-1.5 right-2 bg-black/40 text-white text-[9px] px-1.5 py-0.5 rounded-full">
-                          인증됨
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="w-full h-16 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center bg-gray-50/50">
-                        <span className="text-[10px] text-gray-300">
-                          미인증
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              </Link>
-            );
-          })
+                </Link>
+              );
+            })}
+          </div>
         )}
       </div>
 
       {/* 포커스 타이머 FAB */}
-      <div className="fixed bottom-[68px] left-0 right-0 px-4 flex justify-center z-10 pointer-events-none">
+      <div className="px-4 py-3 bg-white border-t border-gray-100 flex-shrink-0">
         <Link
           href="/timer"
-          className="pointer-events-auto w-full max-w-sm bg-black text-white rounded-full py-3.5 font-semibold text-base shadow-xl shadow-black/20 flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors active:scale-95"
+          className="w-full bg-black text-white rounded-full py-2 font-semibold text-sm shadow-lg flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors active:scale-95"
         >
-          <Timer size={20} />
-          포커스 타이머 시작
+          <Timer size={16} />
+          포커스 시작
         </Link>
       </div>
     </div>
