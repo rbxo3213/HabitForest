@@ -116,7 +116,7 @@ export default function GroupSetup() {
         });
       });
 
-      const userDocRef = doc(db, \"users\", currentUser.uid);
+      const userDocRef = doc(db, "users", currentUser.uid);
       const userDocSnap = await getDoc(userDocRef);
 
       if (userDocSnap.exists()) {
