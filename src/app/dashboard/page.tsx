@@ -3,46 +3,86 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Timer, CheckCircle, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Timer, CheckCircle, Image as ImageIcon, Loader2, Settings } from "lucide-react";
 import { auth, db } from "@/lib/firebase";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 
 export default function Dashboard() {
   const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [groupName, setGroupName] = useState("우리의 마을");
 
   useEffect(() => {
-    // Wait for auth to initialize
     const unsubscribe = auth.onAuthStateChanged(async (user: any) => {
-      if (user) {
-        setCurrentUser(user);
-        
-        try {
-          // For demo, just fetch all users in 'test-group-1'
-          const q = query(collection(db, "users"), where("groupId", "==", "test-group-1"));
-          const querySnapshot = await getDocs(q);
-          const loadedMembers: any[] = [];
-          
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            loadedMembers.push({
-              id: data.uid,
-              name: data.nickname || data.email.split("@")[0],
-              color: data.themeColor || "bg-gray-400",
-              // Mocking task status for the UI demo
-              taskStatus: data.uid === user.uid ? "In Progress" : "Completed",
-              focusedTime: "1시간 30분",
-              hasPhoto: data.uid !== user.uid,
-            });
-          });
-
-          setMembers(loadedMembers);
-        } catch (error) {
-          console.error("Failed to load members:", error);
-        }
+      if (!user) {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+      setCurrentUser(user);
+
+      try {
+        // 1. 현재 유저 doc에서 groupId 가져오기
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (!userDoc.exists()) {
+          setLoading(false);
+          return;
+        }
+        const userData = userDoc.data();
+        const groupId = userData.groupId;
+
+        if (!groupId) {
+          setLoading(false);
+          return;
+        }
+
+        // 2. 그룹 이름 가져오기
+        const groupDoc = await getDoc(doc(db, "groups", groupId));
+        if (groupDoc.exists()) {
+          setGroupName(groupDoc.data().name || "우리의 마을");
+        }
+
+        // 3. 같은 groupId를 가진 유저 전체 조회
+        const q = query(collection(db, "users"), where("groupId", "==", groupId));
+        const snapshot = await getDocs(q);
+
+        const loadedMembers: any[] = [];
+        snapshot.forEach((d) => {
+          const data = d.data();
+          loadedMembers.push({
+            id: data.uid,
+            name: data.nickname || data.email?.split("@")[0] || "알 수 없음",
+            color: data.themeColor || "bg-gray-400",
+            isMe: data.uid === user.uid,
+            taskStatus: data.uid === user.uid ? "in_progress" : "completed",
+            focusedTime: "0분",
+            hasPhoto: data.uid !== user.uid,
+          });
+        });
+
+        // 본인이 목록에 없으면 추가 (Firestore 쿼리 누락 방어)
+        const alreadyIncludesMe = loadedMembers.some((m) => m.id === user.uid);
+        if (!alreadyIncludesMe) {
+          loadedMembers.unshift({
+            id: user.uid,
+            name: userData.nickname || user.email?.split("@")[0] || "나",
+            color: userData.themeColor || "bg-gray-400",
+            isMe: true,
+            taskStatus: "in_progress",
+            focusedTime: "0분",
+            hasPhoto: false,
+          });
+        }
+
+        // 본인을 맨 앞으로
+        loadedMembers.sort((a, b) => (b.isMe ? 1 : 0) - (a.isMe ? 1 : 0));
+
+        setMembers(loadedMembers);
+      } catch (error) {
+        console.error("멤버 로드 실패:", error);
+      } finally {
+        setLoading(false);
+      }
     });
 
     return () => unsubscribe();
@@ -56,90 +96,90 @@ export default function Dashboard() {
     );
   }
 
+  const statusLabel = (status: string) => {
+    if (status === "completed") return { text: "완료됨", color: "text-green-600", icon: <CheckCircle size={14} className="text-green-500" /> };
+    if (status === "in_progress") return { text: "진행 중", color: "text-yellow-600", icon: <div className="w-3.5 h-3.5 rounded-full border-2 border-yellow-400 border-t-transparent animate-spin" /> };
+    return { text: "대기 중", color: "text-gray-400", icon: <div className="w-3.5 h-3.5 rounded-full border-2 border-gray-300" /> };
+  };
+
   return (
-    <div className="min-h-full bg-gray-50 flex flex-col p-6 relative">
-      <header className="flex justify-between items-center py-6 mb-4">
+    <div className="min-h-full bg-gray-50 flex flex-col p-4 relative">
+      <header className="flex justify-between items-center pt-4 pb-3 mb-2">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">우리의 마을</h1>
-          <p className="text-sm text-gray-500 font-medium">오늘의 목표 현황</p>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900">{groupName}</h1>
+          <p className="text-xs text-gray-400 font-medium mt-0.5">오늘의 목표 현황</p>
         </div>
-        <div className="w-12 h-12 bg-gray-200 rounded-full border-2 border-white shadow-sm overflow-hidden flex items-center justify-center">
-          {currentUser && <div className="w-full h-full bg-pink-400" />}
-        </div>
+        <Link href="/settings" className="w-10 h-10 bg-white rounded-full border border-gray-100 shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors">
+          <Settings size={18} className="text-gray-500" />
+        </Link>
       </header>
 
       {/* 2x2 Grid */}
-      <div className="flex-1 grid grid-cols-2 gap-4 auto-rows-fr pb-32">
+      <div className="flex-1 grid grid-cols-2 gap-3 pb-28" style={{ gridAutoRows: "1fr" }}>
         {members.length === 0 ? (
-          <div className="col-span-2 text-center py-20 text-gray-400">
-            마을에 참여한 주민이 없습니다.<br/>(테스트 환경: /seed 페이지에서 유저를 생성하세요)
+          <div className="col-span-2 flex flex-col items-center justify-center py-20 text-gray-400 gap-3">
+            <p className="text-sm text-center break-keep">
+              그룹 데이터가 없습니다.<br />
+              <Link href="/seed" className="text-blue-500 underline">/seed 페이지</Link>에서 테스트 유저를 생성하세요.
+            </p>
           </div>
         ) : (
-          members.map((member, index) => (
-            <Link href={`/village/${member.id}`} key={member.id}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, ease: "easeOut" }}
-                className="h-full bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition-shadow active:scale-95"
-              >
-                {/* Card Header: Avatar & Name */}
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full ${member.color} shadow-inner flex-shrink-0 border-2 border-white`} />
-                  <h3 className="font-semibold text-gray-900 truncate">{member.name}</h3>
-                </div>
-
-                {/* Card Body: Stats */}
-                <div className="space-y-3 mt-4">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Timer size={16} className="text-blue-500" />
-                    <span className="font-medium">{member.focusedTime}</span>
+          members.slice(0, 4).map((member, index) => {
+            const s = statusLabel(member.taskStatus);
+            return (
+              <Link href={`/village/${member.id}`} key={member.id}>
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.08, ease: "easeOut" }}
+                  className={`h-full bg-white rounded-3xl p-4 shadow-sm border flex flex-col justify-between hover:shadow-md transition-shadow active:scale-95 ${
+                    member.isMe ? "border-black/10 ring-2 ring-black/5" : "border-gray-100"
+                  }`}
+                >
+                  {/* 헤더: 아바타 + 이름 */}
+                  <div className="flex items-center gap-2.5">
+                    <div className={`w-9 h-9 rounded-full ${member.color} shadow-inner flex-shrink-0 border-2 border-white flex items-center justify-center`}>
+                      {member.isMe && <span className="text-white text-[8px] font-bold">나</span>}
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-gray-900 truncate text-sm leading-tight">{member.name}</h3>
+                      {member.isMe && <span className="text-[10px] text-gray-400">내 캐릭터</span>}
+                    </div>
                   </div>
-                  
-                  <div className="flex items-center gap-2 text-sm">
-                    {member.taskStatus === "Completed" ? (
-                      <>
-                        <CheckCircle size={16} className="text-green-500" />
-                        <span className="text-green-600 font-medium text-xs">완료됨</span>
-                      </>
-                    ) : member.taskStatus === "In Progress" ? (
-                      <>
-                        <div className="w-4 h-4 rounded-full border-2 border-yellow-500 border-t-transparent animate-spin" />
-                        <span className="text-yellow-600 font-medium text-xs">진행 중</span>
-                      </>
+
+                  {/* 상태 */}
+                  <div className="flex items-center gap-1.5 mt-3">
+                    {s.icon}
+                    <span className={`text-xs font-medium ${s.color}`}>{s.text}</span>
+                  </div>
+
+                  {/* 사진 영역 */}
+                  <div className="mt-3 pt-3 border-t border-gray-50">
+                    {member.hasPhoto ? (
+                      <div className="w-full h-16 rounded-xl bg-gradient-to-tr from-blue-50 to-green-50 flex items-center justify-center relative">
+                        <ImageIcon size={20} className="text-gray-300" />
+                        <span className="absolute bottom-1.5 right-2 bg-black/40 text-white text-[9px] px-1.5 py-0.5 rounded-full">인증됨</span>
+                      </div>
                     ) : (
-                      <>
-                        <div className="w-4 h-4 rounded-full border-2 border-gray-300" />
-                        <span className="text-gray-500 font-medium text-xs">대기 중</span>
-                      </>
+                      <div className="w-full h-16 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center bg-gray-50/50">
+                        <span className="text-[10px] text-gray-300">미인증</span>
+                      </div>
                     )}
                   </div>
-                </div>
-
-                {/* Card Footer: Photo Verification Preview */}
-                <div className="mt-4 pt-4 border-t border-gray-50 flex items-center justify-center">
-                  {member.hasPhoto ? (
-                    <div className="w-full h-20 rounded-xl bg-gray-100 flex items-center justify-center overflow-hidden relative">
-                      <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 to-green-100 opacity-50"></div>
-                      <ImageIcon size={24} className="text-gray-400 z-10" />
-                      <span className="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full z-10">인증됨</span>
-                    </div>
-                  ) : (
-                    <div className="w-full h-20 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center bg-gray-50/50">
-                      <span className="text-xs text-gray-400 font-medium">사진 없음</span>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            </Link>
-          ))
+                </motion.div>
+              </Link>
+            );
+          })
         )}
       </div>
 
-      {/* Floating Action Button for own task */}
-      <div className="fixed md:absolute bottom-[80px] left-0 right-0 flex justify-center px-6 pointer-events-none z-10">
-        <Link href="/timer" className="pointer-events-auto w-full max-w-[calc(28rem-3rem)] bg-black text-white rounded-full py-4 font-semibold text-lg shadow-xl shadow-black/20 flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors active:scale-95">
-          <Timer size={22} />
+      {/* 포커스 타이머 FAB */}
+      <div className="fixed bottom-[68px] left-0 right-0 px-4 flex justify-center z-10 pointer-events-none">
+        <Link
+          href="/timer"
+          className="pointer-events-auto w-full max-w-sm bg-black text-white rounded-full py-3.5 font-semibold text-base shadow-xl shadow-black/20 flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors active:scale-95"
+        >
+          <Timer size={20} />
           포커스 타이머 시작
         </Link>
       </div>
