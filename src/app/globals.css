@@ -23,7 +23,9 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-noto-sans), sans-serif;
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 /* 8-Bit Pixel Theme Overrides */
@@ -39,7 +41,7 @@ html.theme-pixel .shadow-sm,
 html.theme-pixel .shadow-md,
 html.theme-pixel .shadow-lg,
 html.theme-pixel .shadow-xl {
-  box-shadow: 4px 4px 0px 0px rgba(0,0,0,1) !important;
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1) !important;
   border: 2px solid black !important;
 }
 
@@ -52,7 +54,8 @@ html.theme-pixel .bg-gray-50 {
 
 /* Animal Crossing Theme Overrides */
 html.theme-animal-crossing body {
-  font-family: var(--font-noto-sans), sans-serif; /* Could use a bubbly font here */
+  font-family:
+    var(--font-noto-sans), sans-serif; /* Could use a bubbly font here */
 }
 
 html.theme-animal-crossing * {
@@ -68,27 +71,27 @@ html.theme-animal-crossing .bg-white {
   border: 2px solid #aed581 !important; /* Soft green borders */
 }
 
-/* Terraria Theme Overrides */
-html.theme-terraria body {
+/* Craft Theme Overrides */
+html.theme-craft body {
   font-family: "Galmuri11", monospace;
-  background-color: #3e2723 !important; /* Dark earth dirt */
-  color: #fff;
+  background-color: #36291d !important;
+  color: #f4ede0;
 }
 
-html.theme-terraria * {
+html.theme-craft * {
   border-radius: 0 !important;
 }
 
-html.theme-terraria .bg-white {
-  background-color: #5d4037 !important; /* Brown dirt block */
+html.theme-craft .bg-white {
+  background-color: #5d4037 !important;
   color: #fff !important;
   border: 2px solid #8d6e63 !important;
 }
-html.theme-terraria .bg-gray-50 {
+html.theme-craft .bg-gray-50 {
   background-color: #3e2723 !important;
 }
-html.theme-terraria .text-gray-900,
-html.theme-terraria .text-gray-700,
-html.theme-terraria .text-gray-500 {
-  color: #d7ccc8 !important; /* Lighter dirt color for text */
+html.theme-craft .text-gray-900,
+html.theme-craft .text-gray-700,
+html.theme-craft .text-gray-500 {
+  color: #d7ccc8 !important;
 }

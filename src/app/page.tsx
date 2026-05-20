@@ -1,8 +1,8 @@
 "use client";
 
-import Link from 'next/link';
-import { useTheme } from '@/components/ThemeProvider';
-import { Sparkles, Gamepad2, TreePine, Pickaxe } from 'lucide-react';
+import Link from "next/link";
+import { useTheme } from "@/components/ThemeProvider";
+import { Sparkles, Gamepad2, TreePine, Pickaxe } from "lucide-react";
 
 export default function Home() {
   const { theme, setTheme } = useTheme();
@@ -31,29 +31,31 @@ export default function Home() {
           해빗 빌리지
         </h1>
         <p className="text-lg text-gray-500 mb-10 transition-colors duration-300 break-keep">
-          친구들과 함께 매일의 목표를 인증하고,<br/>나만의 다채로운 마을을 키워보세요
+          친구들과 함께 매일의 목표를 인증하고,
+          <br />
+          나만의 다채로운 마을을 키워보세요
         </p>
 
         {/* Theme Selection */}
         <div className="w-full flex flex-col gap-3 mb-8">
           <div className="flex gap-3">
             <button
-              onClick={() => setTheme('minimal')}
+              onClick={() => setTheme("minimal")}
               className={`flex-1 py-3 px-4 rounded-xl flex items-center justify-center gap-2 font-medium transition-all duration-200 ${
-                theme === 'minimal' 
-                  ? 'bg-black shadow-sm text-white border border-black' 
-                  : 'bg-gray-50 text-gray-500 hover:text-black border border-transparent'
+                theme === "minimal"
+                  ? "bg-black shadow-sm text-white border border-black"
+                  : "bg-gray-50 text-gray-500 hover:text-black border border-transparent"
               }`}
             >
               <Sparkles size={18} />
               미니멀
             </button>
             <button
-              onClick={() => setTheme('animal-crossing')}
+              onClick={() => setTheme("animal-crossing")}
               className={`flex-1 py-3 px-4 rounded-xl flex items-center justify-center gap-2 font-medium transition-all duration-200 ${
-                theme === 'animal-crossing' 
-                  ? 'bg-[#aed581] shadow-sm text-black border-2 border-black' 
-                  : 'bg-gray-50 text-gray-500 hover:text-black border-2 border-transparent'
+                theme === "animal-crossing"
+                  ? "bg-[#aed581] shadow-sm text-black border-2 border-black"
+                  : "bg-gray-50 text-gray-500 hover:text-black border-2 border-transparent"
               }`}
             >
               <TreePine size={18} />
@@ -62,26 +64,26 @@ export default function Home() {
           </div>
           <div className="flex gap-3">
             <button
-              onClick={() => setTheme('pixel')}
+              onClick={() => setTheme("pixel")}
               className={`flex-1 py-3 px-4 rounded-xl flex items-center justify-center gap-2 font-medium transition-all duration-200 ${
-                theme === 'pixel' 
-                  ? 'bg-white shadow-[4px_4px_0_0_#000] text-black border-2 border-black' 
-                  : 'bg-gray-50 text-gray-500 hover:text-black border-2 border-transparent'
+                theme === "pixel"
+                  ? "bg-white shadow-[4px_4px_0_0_#000] text-black border-2 border-black"
+                  : "bg-gray-50 text-gray-500 hover:text-black border-2 border-transparent"
               }`}
             >
               <Gamepad2 size={18} />
               8비트
             </button>
             <button
-              onClick={() => setTheme('terraria')}
+              onClick={() => setTheme("craft")}
               className={`flex-1 py-3 px-4 rounded-xl flex items-center justify-center gap-2 font-medium transition-all duration-200 ${
-                theme === 'terraria' 
-                  ? 'bg-[#5d4037] shadow-[4px_4px_0_0_#3e2723] text-white border-2 border-[#8d6e63]' 
-                  : 'bg-gray-50 text-gray-500 hover:text-black border-2 border-transparent'
+                theme === "craft"
+                  ? "bg-[#5d4037] shadow-[4px_4px_0_0_#3e2723] text-white border-2 border-[#8d6e63]"
+                  : "bg-gray-50 text-gray-500 hover:text-black border-2 border-transparent"
               }`}
             >
               <Pickaxe size={18} />
-              테라리아
+              크래프트
             </button>
           </div>
         </div>

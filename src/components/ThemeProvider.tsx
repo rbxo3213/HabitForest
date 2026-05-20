@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-type Theme = "minimal" | "pixel" | "animal-crossing" | "terraria";
+type Theme = "minimal" | "pixel" | "animal-crossing" | "craft";
 
 interface ThemeContextType {
   theme: Theme;
@@ -21,7 +21,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   const applyThemeClass = (newTheme: Theme) => {
-    document.documentElement.classList.remove("theme-pixel", "theme-animal-crossing", "theme-terraria");
+    document.documentElement.classList.remove(
+      "theme-pixel",
+      "theme-animal-crossing",
+      "theme-craft",
+    );
     if (newTheme !== "minimal") {
       document.documentElement.classList.add(`theme-${newTheme}`);
     }

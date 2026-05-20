@@ -1,7 +1,7 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
+import { getStorage, type FirebaseStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 // TODO: Replace these with your actual Firebase config
@@ -14,9 +14,18 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-let app, auth: any, db: any, storage: any;
+let app: FirebaseApp | undefined;
+let auth: Auth = {} as Auth;
+let db: Firestore = {} as Firestore;
+let storage: FirebaseStorage = {} as FirebaseStorage;
+const isFirebaseConfigured = Boolean(
+  firebaseConfig.apiKey &&
+  firebaseConfig.authDomain &&
+  firebaseConfig.projectId &&
+  firebaseConfig.appId,
+);
 
-if (firebaseConfig.apiKey) {
+if (isFirebaseConfigured) {
   // Initialize Firebase (Prevent multiple initializations in dev mode)
   app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
   auth = getAuth(app);
@@ -24,9 +33,6 @@ if (firebaseConfig.apiKey) {
   storage = getStorage(app);
 } else {
   console.warn("Firebase config is missing. Running in mock UI mode.");
-  auth = {};
-  db = {};
-  storage = {};
 }
 
-export { app, auth, db, storage };
+export { app, auth, db, storage, isFirebaseConfigured };
